@@ -13,6 +13,7 @@ from tqdm    import tqdm
 
 # User libraries
 from .clo2Utils import typc, error
+from .clo2Imagine import Stage, Show
 from jSona import save, load, dumps
 
 # Detectron2 libraries
@@ -298,18 +299,18 @@ class Factory() :
         segs = []
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
-            contour = np.array(contour.flatten().tolist(), dtype=np.uint8).tolist()
+            contour = contour.flatten().tolist()
             if len(contour) > len('XYXY') : segs.append(contour)
         return (segs, bbox)
 
 # Managing the datasets, models and metrics. Also show images
 class Manager() :
     def __init__(self :type, DATA_PATH :str, YAML_NAME :str, CONF_PATH :str) :
-        self.configuration(DATA_PATH, YAML_NAME, CONF_PATH)
         self.categories = None
         self.classes    = None
         self.datasets   = None
-
+        self.configuration(DATA_PATH, YAML_NAME, CONF_PATH)
+        
     def check_train_materials(self) :
         if self.categories and self.datasets : 
             log("We have {} numbers categories and {} numbers datasets.".format(len(self.categories), len(self.datasets)), 'i')

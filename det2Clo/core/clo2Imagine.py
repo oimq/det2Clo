@@ -45,7 +45,7 @@ class Stage() :
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
-    def show(self, img, tool :str ="plt", scale :float =0.5, detects=None) :
+    def show(self, img =None, tool :str ="plt", scale :float =0.5, detects=None) :
         if tool not in self.TOOLS : return print("There are no type for [ {} ]".format(tool))
 
         if   typc(img, "")   : img = cv2.imread(img)
@@ -55,11 +55,18 @@ class Stage() :
                 visual = Visualizer(img[:, :, ::-1], metadata = detects['metadata'], scale = scale)
                 prediction = visual.draw_instance_predictions(detects['outputs']['instances'].to('cpu'))
                 img = prediction.get_image()[:, :, ::-1]
-                
             else : log("detects must have {} and be specified... but your is {}".format(['outputs', 'metadata'], detects.keys()), 'e')
-        
         self.draw(img, tool)
 
+    def paint(self, img, detects, scale :float =0.5, ) :
+        if   typc(img, "")   : img = cv2.imread(img)
+        elif typc(img, None) : log("There are no image.", 'e')
+        if len(set(detects.keys())&set(['outputs', 'metadata'])) == 2 :
+            visual = Visualizer(img[:, :, ::-1], metadata = detects['metadata'], scale = scale)
+            prediction = visual.draw_instance_predictions(detects['outputs']['instances'].to('cpu'))
+            return prediction.get_image()[:, :, ::-1]
+        else : log("detects must have {} and be specified... but your is {}".format(['outputs', 'metadata'], detects.keys()), 'e')
+        
     def plot(self, xx, yy, title :str ="", xlabel :str ="", ylabel :str ="", shape :tuple =(15, 15), guide =True) :
         # Adjust figure
         plt.figure(figsize=shape)
@@ -136,13 +143,13 @@ class Show() :
         if typc(img, None) : log("There is no image"); return False
         cpimg = img.copy()
         for segment in segments : 
-            print(segment)
             if typc(segment, list()) : segment = np.array(segment, dtype=object)
             cpimg[self.seg4mask(segment, cpimg.shape) >= 255] = 0
         self.stage.show(cpimg, tool='plt')
 
     def compareMetrics(self, METC_PATH, step_size :int =5000, title :str ="", 
-            xfields :list =['iteration'], yfields :list =['total_loss'], cry :bool =True, log :bool =True) :
+            xfields :list =['iteration'], yfields :list =['total_loss'], cry :bool =True, 
+            log :bool =True, guide :bool =True) :
         metrics = load(join(METC_PATH, 'metrics.json'))
         metrics = list(filter(lambda metric:metric['iteration']!=0 and (metric['iteration']+1)%step_size==0, metrics))
 
@@ -154,10 +161,10 @@ class Show() :
         
         if cry : 
             if  len(fxs) == 1  : 
-                self.stage.plot(fxs[0], fys[0], title=title, xlabel=xfields[0], ylabel=yfields[0], log=log)
+                self.stage.plot(fxs[0], fys[0], title=title, xlabel=xfields[0], ylabel=yfields[0], log=log, guide=guide)
 
             else    : 
-                self.stage.plots(fxs, fys, title=title, xlabels=xfields, ylabels=yfields, log=log)
+                self.stage.plots(fxs, fys, title=title, xlabels=xfields, ylabels=yfields, log=log, guide=guide)
         
         mm = { yfields[i]: (fys[i].index(max(fys[i])), max(fys[i]), 
                             fys[i].index(min(fys[i])), min(fys[i])) for i in range(len(fys)) }

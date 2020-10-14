@@ -13,7 +13,7 @@ if __name__=="__main__" :
         'mask_rcnn/false_negative'
     ]
     METC_FIELDS_X = ['iteration'] * len(METC_FIELDS_Y)
-    mm = show.compareMetrics(METC_PATH, step_size=3000, title=METC_TITLE, xfields=METC_FIELDS_X, yfields=METC_FIELDS_Y, log=False)
+    mm = show.compareMetrics(METC_PATH, step_size=5000, title=METC_TITLE, xfields=METC_FIELDS_X, yfields=METC_FIELDS_Y, log=False, guide=True)
 
     METC_TITLE = "Loss Matrix"
     METC_FIELDS_Y = [
@@ -25,4 +25,4 @@ if __name__=="__main__" :
         'loss_rpn_loc',
     ]
     METC_FIELDS_X = ['iteration'] * len(METC_FIELDS_Y)
-    show.compareMetrics(METC_PATH, step_size=5000, title=METC_TITLE, xfields=METC_FIELDS_X, yfields=METC_FIELDS_Y, log=False)
+    show.compareMetrics(METC_PATH, step_size=5000, title=METC_TITLE, xfields=METC_FIELDS_X, yfields=METC_FIELDS_Y, log=False, guide=True)

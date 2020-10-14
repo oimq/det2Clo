@@ -1,8 +1,9 @@
 from det2Clo import clo2Imagine as c2i, clo2Trainer as c2t
 from os.path import join
+from jSona import save, load
 
 if __name__=="__main__" :
-    DATA_PATH = "/home/denny/datasets/iMaterialist/"
+    DATA_PATH = "/media/denny/park2/iMaterialist/"
     TRAN_PATH = join(DATA_PATH, "train/")
     ANNO_PATH = join(DATA_PATH, "train.csv")
     LABL_PATH = join(DATA_PATH, "label_descriptions.json")
@@ -25,14 +26,15 @@ if __name__=="__main__" :
 
     # ! Create datasets and save that
     SETS_PATH = join(DATA_PATH, 'train_datasets.json')
-    # datasets = factory.datasets4imat(TRAN_PATH, ANNO_PATH, LABL_PATH, manager.categories, classes=CLASSES)
-    # save(SETS_PATH, datasets)
+    datasets = factory.datasets4imat(TRAN_PATH, ANNO_PATH, LABL_PATH, manager.categories, sample_size=50, classes=CLASSES)
+    save(SETS_PATH, datasets)
 
     # ! Load the datasets
     manager.load_datasets(SETS_PATH)
+    print(manager.datasets[0]['file_name'])
 
-    # # ! Make trainer after load categories and datasets
-    trainer = c2t.Trainer(manager)
-    trainer.training(BATCH_SIZE_PER_IMAGE=32)
+    # # # ! Make trainer after load categories and datasets
+    # trainer = c2t.Trainer(manager)
+    # trainer.training(BATCH_SIZE_PER_IMAGE=32)
 
-    print("done")
+    # print("done")
